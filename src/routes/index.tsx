@@ -28,7 +28,11 @@ function Landing() {
           </Link>
           <nav className="flex items-center gap-2">
             <Button asChild variant="ghost"><Link to="/auth">Sign in</Link></Button>
-            <Button asChild><Link to="/auth">Launch console</Link></Button>
+            <Button asChild>
+              <Link to="/auth" search={{ next: "/reception" }}>
+                Launch console
+              </Link>
+            </Button>
           </nav>
         </div>
       </header>
@@ -49,8 +53,16 @@ function Landing() {
               QueueCure replaces token boards with live ETA prediction, emergency-aware ordering, and operational risk forecasting — so patients arrive on time and doctors stay in flow.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button asChild size="lg"><Link to="/auth">Open command center</Link></Button>
-              <Button asChild size="lg" variant="outline"><Link to="/auth">Demo doctor console</Link></Button>
+              <Button asChild size="lg">
+                <Link to="/auth" search={{ next: "/reception" }}>
+                  Open command center
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <Link to="/auth" search={{ next: "/doctor" }}>
+                  Demo doctor console
+                </Link>
+              </Button>
             </div>
           </motion.div>
 

@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect } from "react";
+import { Cpu } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -42,26 +43,34 @@ function ReceptionInsightsPage() {
   }, [effQ, recQ, botQ]);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <AppHeader role="Reception · Insights" />
-      <main className="mx-auto max-w-[1600px] space-y-5 px-6 py-6">
+      
+      <main className="mx-auto max-w-[1600px] space-y-6 px-6 py-6">
         <div>
-          <h1 className="font-display text-2xl font-bold">Operations Intelligence</h1>
-          <p className="text-sm text-muted-foreground">Live efficiency, bottlenecks, forecasts and actionable recommendations.</p>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-primary flex items-center gap-1">
+            <Cpu className="h-3.5 w-3.5 text-intelligence animate-pulse" />
+            Predictive Operations Center
+          </span>
+          <h1 className="font-display text-page-title text-foreground tracking-tight mt-1">Operations Intelligence</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Live efficiency indices, timeline simulations, bottlenecks, and optimization recommendations.</p>
         </div>
 
-        <section className="grid gap-4 lg:grid-cols-[1fr_1.2fr]">
+        {/* Top: Efficiency Score Hero */}
+        <section>
           <EfficiencyScoreGauge data={effQ.data} />
-          <RecommendationsFeed items={recQ.data} />
         </section>
 
-        <section className="grid gap-4 xl:grid-cols-2">
+        {/* Middle: Forecast Intelligence, Bottleneck Detection & Prediction Accuracy */}
+        <section className="grid gap-6 grid-cols-1 xl:grid-cols-3">
+          <ForecastChart />
           <BottleneckPanel items={botQ.data} />
           <PredictionAccuracyCard data={accQ.data} />
         </section>
 
+        {/* Bottom: Recommendations Feed */}
         <section>
-          <ForecastChart />
+          <RecommendationsFeed items={recQ.data} />
         </section>
       </main>
     </div>

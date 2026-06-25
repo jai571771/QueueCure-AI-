@@ -1,11 +1,11 @@
 import { motion } from "framer-motion";
-import { Gauge, TrendingUp, AlertOctagon } from "lucide-react";
+import { Gauge, TrendingUp, AlertTriangle, ShieldAlert } from "lucide-react";
 import type { QueueRisk } from "@/lib/intel.functions";
 
 const map = {
-  low: { label: "Low Risk", dot: "bg-success", text: "text-success", icon: Gauge, ring: "ring-success/30" },
-  moderate: { label: "Moderate Risk", dot: "bg-warning", text: "text-warning", icon: TrendingUp, ring: "ring-warning/30" },
-  high: { label: "High Risk", dot: "bg-destructive", text: "text-destructive", icon: AlertOctagon, ring: "ring-destructive/30" },
+  low: { label: "Risk: Minimal", dot: "bg-intelligence/40", text: "text-intelligence/80 border-intelligence/20 bg-intelligence/5" },
+  moderate: { label: "Risk: Elevated", dot: "bg-intelligence shadow-[0_0_6px_var(--intelligence)]", text: "text-intelligence border-intelligence/30 bg-intelligence/10" },
+  high: { label: "Risk: Critical", dot: "bg-intelligence shadow-[0_0_8px_var(--intelligence)]", text: "text-intelligence border-intelligence/40 bg-intelligence/15 animate-pulse" },
 } as const;
 
 function fmtClock(iso: string) {
@@ -14,34 +14,80 @@ function fmtClock(iso: string) {
 }
 
 export function QueueRiskWidget({ risk }: { risk: QueueRisk | undefined }) {
-  if (!risk) return <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">Loading…</div>;
-  const s = map[risk.level];
+  if (!risk) {
+    return (
+      <div className="rounded-2xl border border-border bg-card/50 p-6 shadow-sm animate-pulse h-48 flex items-center justify-center text-sm text-muted-foreground">
+        Analyzing queue risk...
+      </div>
+    );
+  }
+
+  const s = map[risk.level] || map.low;
+
+  // What, Why, Impact, Action
+  const whatText = `Queue congestion risk is rated as ${risk.level.toUpperCase()} with a load of ${risk.queue_load} waiting patient${risk.queue_load === 1 ? "" : "s"}.`;
+  const whyText = `Arrival rate (${risk.arrival_rate_per_hour}/hr) is ${risk.arrival_rate_per_hour > risk.service_rate_per_hour ? "exceeding" : "under"} doctor capacity (${risk.service_rate_per_hour}/hr).`;
+  const impactText = `Queue clearance will complete at approximately ${fmtClock(risk.expected_clearance_at)} (${risk.clearance_minutes}m duration).`;
+  const actionText = risk.reason;
+
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Queue Risk</p>
-        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ring-1 ring-inset ${s.ring} ${s.text}`}>
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="glass-card border-gradient-intel rounded-2xl p-6 shadow-intel"
+    >
+      <div className="flex items-center justify-between pb-4 border-b border-border/40">
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-intelligence/15 text-intelligence">
+            <ShieldAlert className="h-4 w-4" />
+          </div>
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Risk Forecast</p>
+            <p className="font-display text-sm font-bold text-foreground">Congestion Risk Analysis</p>
+          </div>
+        </div>
+        <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${s.text}`}>
           <span className={`h-2 w-2 rounded-full ${s.dot}`} /> {s.label}
         </span>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-3">
-        <Stat label="Expected Clearance" value={fmtClock(risk.expected_clearance_at)} />
-        <Stat label="Current Load" value={`${risk.queue_load} waiting`} />
-        <Stat label="Doctor Capacity" value={`${risk.service_rate_per_hour}/hr`} />
-        <Stat label="Arrival Rate" value={`${risk.arrival_rate_per_hour}/hr`} />
+
+      <div className="mt-4 grid grid-cols-2 gap-3 pb-4 border-b border-border/40 text-xs">
+        <div className="flex justify-between p-2.5 rounded-lg border border-border/30 bg-background/30">
+          <span className="text-muted-foreground">Arrivals</span>
+          <span className="font-bold text-foreground">{risk.arrival_rate_per_hour}/hr</span>
+        </div>
+        <div className="flex justify-between p-2.5 rounded-lg border border-border/30 bg-background/30">
+          <span className="text-muted-foreground">Capacity</span>
+          <span className="font-bold text-foreground">{risk.service_rate_per_hour}/hr</span>
+        </div>
+        <div className="flex justify-between p-2.5 rounded-lg border border-border/30 bg-background/30">
+          <span className="text-muted-foreground">Queue Load</span>
+          <span className="font-bold text-foreground">{risk.queue_load} active</span>
+        </div>
+        <div className="flex justify-between p-2.5 rounded-lg border border-border/30 bg-background/30">
+          <span className="text-muted-foreground">Est. Clear</span>
+          <span className="font-bold text-intelligence text-glow-intel">{fmtClock(risk.expected_clearance_at)}</span>
+        </div>
       </div>
-      <p className="mt-4 rounded-lg bg-muted/60 p-3 text-sm text-foreground">
-        <span className="font-semibold">Reason: </span>{risk.reason}
-      </p>
+
+      {/* Decision-support Explanation Section */}
+      <div className="mt-4 space-y-3">
+        <ExplainRow label="What" value={whatText} valueClass="font-medium text-foreground text-[13px]" />
+        <ExplainRow label="Why" value={whyText} />
+        <ExplainRow label="Impact" value={impactText} />
+        <ExplainRow label="Action" value={actionText} valueClass="text-intelligence font-medium text-[13px] text-glow-intel" />
+      </div>
     </motion.div>
   );
 }
 
-function Stat({ label, value }: { label: string; value: React.ReactNode }) {
+function ExplainRow({ label, value, valueClass = "text-muted-foreground text-[12px]" }: { label: string; value: string; valueClass?: string }) {
   return (
-    <div>
-      <p className="text-[11px] uppercase tracking-wider text-muted-foreground">{label}</p>
-      <p className="font-display text-lg font-bold text-foreground">{value}</p>
+    <div className="grid grid-cols-[60px_1fr] gap-3">
+      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mt-0.5">{label}</span>
+      <span className={`leading-snug ${valueClass}`}>{value}</span>
     </div>
   );
 }
+

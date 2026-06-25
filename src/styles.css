@@ -51,6 +51,12 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Intelligence System mappings */
+  --color-intelligence: var(--intelligence);
+  --color-intelligence-foreground: var(--intelligence-foreground);
+  --color-intelligence-muted: var(--intelligence-muted);
+  --color-intelligence-border: var(--intelligence-border);
 }
 
 :root {
@@ -97,6 +103,12 @@
   --sidebar-accent-foreground: oklch(0.20 0.05 260);
   --sidebar-border: oklch(0.92 0.012 250);
   --sidebar-ring: oklch(0.56 0.20 264);
+
+  /* Purple Intelligence / AI system */
+  --intelligence: oklch(0.50 0.23 292);
+  --intelligence-foreground: oklch(0.99 0.01 292);
+  --intelligence-muted: oklch(0.96 0.02 292);
+  --intelligence-border: oklch(0.50 0.23 292 / 12%);
 }
 
 .dark {
@@ -136,6 +148,12 @@
   --sidebar-accent-foreground: oklch(0.97 0.006 240);
   --sidebar-border: oklch(1 0 0 / 12%);
   --sidebar-ring: oklch(0.65 0.20 264);
+
+  /* Purple Intelligence / AI system */
+  --intelligence: oklch(0.68 0.20 292);
+  --intelligence-foreground: oklch(0.10 0.03 292);
+  --intelligence-muted: oklch(0.24 0.05 292);
+  --intelligence-border: oklch(0.68 0.20 292 / 20%);
 }
 
 @layer base {
@@ -168,13 +186,86 @@
     backdrop-filter: blur(14px);
     -webkit-backdrop-filter: blur(14px);
   }
+  .glass-card {
+    background: color-mix(in oklab, var(--card) 75%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in oklab, var(--border) 60%, transparent);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.015), inset 0 1px 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .dark .glass-card {
+    background: color-mix(in oklab, var(--card) 45%, transparent);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15), inset 0 1px 1px 0 rgba(255, 255, 255, 0.01);
+  }
+  .border-gradient-intel {
+    border: 1px solid transparent;
+    background: linear-gradient(var(--card), var(--card)) padding-box,
+                linear-gradient(to bottom right, var(--intelligence), transparent) border-box;
+  }
+  .text-glow-intel {
+    text-shadow: 0 0 10px color-mix(in oklab, var(--intelligence) 35%, transparent);
+  }
+  .shadow-premium {
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.03), 0 1px 3px rgba(0, 0, 0, 0.01);
+  }
+  .shadow-intel {
+    box-shadow: 0 10px 32px -8px color-mix(in oklab, var(--intelligence) 10%, transparent);
+  }
+  /* Airport Board Styles */
+  .airport-board {
+    background: oklch(0.12 0.01 260);
+    color: oklch(0.99 0.01 260);
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+  }
+  .airport-cell {
+    border-color: rgba(255, 255, 255, 0.08);
+  }
+  /* Typography System */
+  .text-hero {
+    font-size: clamp(3.75rem, 8vw, 4.5rem); /* ~60px to 72px/80px */
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+  .text-page-title {
+    font-size: clamp(2.25rem, 5vw, 3rem); /* ~36px to 48px */
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+  .text-section-title {
+    font-size: 1.75rem; /* 28px */
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+  }
+  .text-metric {
+    font-size: 2.25rem; /* 36px */
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+  .text-label-sm {
+    font-size: 0.8125rem; /* 13px */
+    font-weight: 600;
+    letter-spacing: 0.03em;
+  }
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  @keyframes pulse-subtle {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: .75; transform: scale(1.02); }
+  }
 }
 
 @layer utilities {
-  html[data-presentation="on"] .font-display { letter-spacing: -0.015em; }
-  html[data-presentation="on"] h1 { font-size: 2.4rem; }
-  html[data-presentation="on"] .text-3xl { font-size: 2.25rem; line-height: 1.05; }
-  html[data-presentation="on"] .text-2xl { font-size: 1.875rem; line-height: 1.1; }
-  html[data-presentation="on"] .text-xl { font-size: 1.5rem; line-height: 1.15; }
-  html[data-presentation="on"] .rounded-2xl { box-shadow: 0 12px 30px -16px color-mix(in oklab, var(--primary) 35%, transparent); }
+  .font-display { letter-spacing: -0.015em; }
+  h1 { font-size: 2.4rem; }
+  .text-3xl { font-size: 2.25rem; line-height: 1.05; }
+  .text-2xl { font-size: 1.875rem; line-height: 1.1; }
+  .text-xl { font-size: 1.5rem; line-height: 1.15; }
+  .rounded-2xl { box-shadow: 0 12px 30px -16px color-mix(in oklab, var(--primary) 35%, transparent); }
 }

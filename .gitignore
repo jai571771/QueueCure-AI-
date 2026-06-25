@@ -20,6 +20,12 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Vercel build output
+.vercel/
+
+# Scratch / temp scripts
+scratch-test-db.js
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

@@ -17,7 +17,7 @@ export default defineConfig({
     },
   },
   nitro: {
-    preset: "netlify",
+    preset: "vercel",
   },
   vite: {
     build: {
